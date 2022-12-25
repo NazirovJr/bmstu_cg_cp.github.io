@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Twisty Polyhedra</title>
+    <style>
+      * {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      canvas {
+        cursor: pointer;
+      }
+      #solverloader {
+        display: inline-block;
+        border: 8px solid skyblue;
+        border-radius: 50%;
+        border-top: 8px solid white;
+        width: 12px;
+        height: 12px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+      }
+
+      /* Safari */
+      @-webkit-keyframes spin {
+        0% {
+          -webkit-transform: rotate(0deg);
+        }
+        100% {
+          -webkit-transform: rotate(360deg);
+        }
+      }
+
+      button {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 5px 10px;
+          background-color: #01CB15;
+          border: none;
+          box-shadow: 0 0 5px #999;
+          border-radius: 3px;
+          width: 120px;
+          font-weight: 600;
+          font-size: 16px;
+          color: white;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .makemovebutton {
+        vertical-align: top;
+        font-size: 30px;
+        font-weight: bold;
+        padding: 10px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body
+    style="
+      background-color: #202020;
+      color: white;
+      text-align: center;
+      min-width: 1024px;
+      min-height: 737px;
+    "
+  >
+
+<!--  Success -->
+    <div
+      id="success"
+      style="
+        display: none;
+        vertical-align: top;
+        width: 394px;
+        margin-top: 100px;
+        border: 3px solid skyblue;
+        border-radius: 20px;
+      "
+    >
+      <h2 style="position: relative; font-family: cursive;">
+        Congratulations!
+        <div
+          onclick="menu.style.display='inline-block';success.style.display='none'"
+          style="
+            font-family: fantasy;
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            right: 20px;
+            color: red;
+          "
+        >
+          X
+        </div>
+      </h2>
+      <p id="message"></p>
+    </div>
+
+    <!--    Help button and text in it -->
+    <div
+      id="help"
+      style="
+        display: none;
+        vertical-align: top;
+        width: 394px;
+        margin-top: 50px;
+        border: 3px solid skyblue;
+        border-radius: 20px;
+      "
+    >
+      <h2 style="font-family: cursive; position: relative;">
+          ПОМОЩЬ
+          <div
+          onclick="menu.style.display='inline-block';help.style.display='none'"
+          style="
+            font-family: fantasy;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+            right: 20px;
+            color: red;
+          "
+        >
+          X
+        </div>
+      </h2>
+      <ul style="margin-right: 10px;">
+        <li style="text-align: left; margin-bottom: 10px;">
+            Чтобы скрутить кусочек,
+            <br/>нажмите (левую кнопку мыши ИЛИ сенсорный экран) на наклейку и перетащите.
+        </li>
+        <li style="text-align: left; margin-bottom: 10px;">
+            Чтобы повернуть головоломку,
+          <br/>нажмите (левая кнопка мыши ИЛИ сенсорный экран) на пустое место возле головоломки и перетащите.
+          <br/><br/>Альтернативно (на ПК),
+          <br/>нажмите (правая кнопка мыши ИЛИ ctrl+левая кнопка мыши) в любом месте на холсте головоломки и перетащите.
+        </li>
+        <li style="text-align: left; margin-bottom: 10px;">
+            Нажмите на любую головоломку в меню, чтобы выбрать ее.
+        </li>
+          <li style="text-align: left; margin-bottom: 10px;">
+              Чтобы поменять цвет кубика Рубика
+              <br/>Нажмите кнопку настройки.
+          </li>
+      </ul>
+      <h2 style="font-family: cursive;">
+          Удачного решения!
+      </h2>
+    </div>
+
+
+<!--    Menu and the vizualization other choice of cubik rubik -->
+    <div
+      id="menu"
+      style="
+        display: inline-block;
+        vertical-align: top;
+        text-align: center;
+        margin-top: 50px;
+        width: 400px;
+      "
+    >
+      <div id="puzzlemenu" style="display: inline-block; height: 300px;">
+        <div id="shapemenu" style="display: inline-block; height: 300px;">
+          <div style="height: 100px;">
+            <div style="display: inline-block; width: 100px; height: 100px;">
+              <canvas id="tetrahedron" width="100px" height="100px"></canvas>
+            </div>
+          </div>
+          <div style="height: 100px;">
+            <div
+              style="
+                display: inline-block;
+                width: 100px;
+                height: 100px;
+                margin-right: 80px;
+              "
+            >
+              <canvas id="cube" width="100px" height="100px"></canvas>
+            </div>
+            <div style="display: inline-block; width: 100px; height: 100px;">
+              <canvas id="octahedron" width="100px" height="100px"></canvas>
+            </div>
+          </div>
+          <div style="height: 100px;">
+            <div
+              style="
+                display: inline-block;
+                width: 100px;
+                height: 100px;
+                margin-right: 20px;
+                margin-top: 15px;
+              "
+            >
+              <canvas id="dodecahedron" width="100px" height="100px"></canvas>
+            </div>
+            <div style="display: inline-block; width: 100px; height: 100px;">
+              <canvas id="icosahedron" width="100px" height="100px"></canvas>
+            </div>
+          </div>
+        </div>
+        <div id="sizemenu" style="height: 300px; margin-top: 15px;">
+          <div
+            style="
+              display: inline-block;
+              vertical-align: top;
+              margin-top: 100px;
+            "
+          >
+            <div style="width: 100px; height: 100px;">
+              <canvas id="size-1" width="100px" height="100px"></canvas>
+            </div>
+          </div>
+          <div style="vertical-align: top;">
+            <div style="display: inline-block; width: 100px; height: 100px;">
+              <canvas id="size-2" width="100px" height="100px"></canvas>
+            </div>
+            <div style="display: inline-block; width: 100px; height: 100px;">
+              <canvas id="size-3" width="100px" height="100px"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        id="configurationmenu"
+        style="
+          vertical-align: top;
+          text-align: left;
+          height: 300px;
+          margin-top: 19px;
+          display: none;
+        "
+      >
+          <h3>Поменять цвет кубика рубика</h3>
+          <div
+                  style="
+            border: 3px solid white;
+            padding: 40px;
+            margin-top: 100px;
+            border-radius: 10%;
+          "
+          >
+              <div id = "choosecolor" style="overflow-y: scroll; height:250px;">
+
+              </div>
+              <button onclick="window.configMenu()">Save</button>
+
+          </div>
+      </div>
+
+
+
+
+<!--Buttons and their functional-->
+      <div style="display:inline-block;margin: 50px 65px;width: 100%; height: 35px; font-size: 40px;">
+
+      <!--about us button-->
+
+
+
+        <span
+                id = "question"
+          onclick="help.style.display='inline-block';menu.style.display='none'"
+          style="
+            cursor: pointer;
+            float: left;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            color: skyblue;
+            display: inline;
+          "
+          >?</span
+        >
+          <span
+                  id="puzzlemenubutton"
+                  onclick="backHandler();"
+                  style="
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            display: none;
+            color: red;
+          "
+          >&#9665;</span
+          >
+
+          <!--          CONFIG COLOR-->
+          <div style=" display:inline;height: 35px; font-size: 40px">
+            <span
+                    id="settingsmenubutton"
+                    onclick="puzzlemenu.style.display=settingsmenubutton.style.display='none';configurationmenu.style.display=puzzlemenubutton.style.display='inline';question.style.display='none';"
+                    style="cursor: pointer; width: 50px; height: 50px; line-height: 50px"
+            >&#9881;</span>
+          </div>
+
+
+      </div>
+
+    <!--Support Run with browser version-->
+      <div id="solverunsupported" style="color:skyblue; display: none;">
+        Solver could not be instantiated due to lack of background worker support. Please upgrade your browser to use the solver.
+      </div>
+    </div>
+
+
+
+
+
+<!--????????-->
+    <div style="display: inline-block; color: skyblue;">
+      <canvas id="gameCanvas" width="600px" height="600px"></canvas>
+      <div id="solutionpanel" width="600px" style="display: none;">
+        <span id="revertsolutionpanel">
+        </span>
+        <span
+                id="solutioninfo"
+                style="display: inline-block; width: 150px;"
+        ></span>
+      </div>
+      <span
+              id="stats"
+              style="position: fixed; right: 50px; top: 50px; display: none;"
+      ></span
+      >
+    </div>
+
+
+
+<!--   cube rubik simulate  -->
+    <div
+      id="rearView"
+      style="position: fixed; display: none; right: 0px; bottom: 20px;"
+    >
+      <canvas id="gameCanvasInverted" width="200px" height="200px"></canvas>
+    </div>
+
+
+
+<!--    Script adding -->
+    <script type="text/javascript" src="src/utils.js"></script>
+    <script type="text/javascript" src="src/classes/Vector.js"></script>
+    <script type="text/javascript" src="src/classes/Quaternion.js"></script>
+    <script type="text/javascript" src="src/classes/Point.js"></script>
+    <script type="text/javascript" src="src/classes/Sticker.js"></script>
+    <script type="text/javascript" src="src/classes/Face.js"></script>
+    <script type="text/javascript" src="src/classes/Cycle.js"></script>
+    <script type="text/javascript" src="src/classes/Puzzle.js"></script>
+    <script type="text/javascript" src="src/classes/Puzzles/Cube.js"></script>
+    <script
+      type="text/javascript"
+      src="src/classes/Puzzles/Tetrahedron.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="src/classes/Puzzles/Octahedron.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="src/classes/Puzzles/Dodecahedron.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="src/classes/Puzzles/Icosahedron.js"
+    ></script>
+    <script type="text/javascript" src="src/solver.js"></script>
+    <script type="text/javascript" src="src/menu.js"></script>
+    <script type="text/javascript" src="src/game.js"></script>
+  </body>
+</html>
